@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "186859224506",
+    "project_id": "carnaval-d2054",
+    "storage_bucket": "carnaval-d2054.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186859224506:android:74ed9bb5b65bd8414bf183",
+        "android_client_info": {
+          "package_name": "com.inspot.technology.carnavalapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNLAZkm8bAZgHeuTKfPWMiC_qVe5Nbs_s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
