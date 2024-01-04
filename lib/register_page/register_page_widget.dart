@@ -1,10 +1,14 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'register_page_model.dart';
 export 'register_page_model.dart';
 
@@ -15,10 +19,27 @@ class RegisterPageWidget extends StatefulWidget {
   _RegisterPageWidgetState createState() => _RegisterPageWidgetState();
 }
 
-class _RegisterPageWidgetState extends State<RegisterPageWidget> {
+class _RegisterPageWidgetState extends State<RegisterPageWidget>
+    with TickerProviderStateMixin {
   late RegisterPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  var hasIconTriggered = false;
+  final animationsMap = {
+    'iconOnActionTriggerAnimation': AnimationInfo(
+      trigger: AnimationTrigger.onActionTrigger,
+      applyInitialState: false,
+      effects: [
+        RotateEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 2000.ms,
+          begin: -5.0,
+          end: 5.0,
+        ),
+      ],
+    ),
+  };
 
   @override
   void initState() {
@@ -33,6 +54,13 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
 
     _model.passwordConfirmController ??= TextEditingController();
     _model.passwordConfirmFocusNode ??= FocusNode();
+
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
+      this,
+    );
   }
 
   @override
@@ -469,9 +497,34 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                           child: Padding(
                                             padding:
                                                 const EdgeInsetsDirectional.fromSTEB(
-                                                    0.0, 30.0, 0.0, 16.0),
-                                            child: FFButtonWidget(
-                                              onPressed: () async {
+                                                    0.0, 50.0, 0.0, 20.0),
+                                            child: InkWell(
+                                              splashColor: Colors.transparent,
+                                              focusColor: Colors.transparent,
+                                              hoverColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              onTap: () async {
+                                                // Init Processing
+                                                setState(() {
+                                                  _model.isProcessing = true;
+                                                });
+                                                // init animation
+                                                if (animationsMap[
+                                                        'iconOnActionTriggerAnimation'] !=
+                                                    null) {
+                                                  setState(() =>
+                                                      hasIconTriggered = true);
+                                                  SchedulerBinding.instance
+                                                      .addPostFrameCallback(
+                                                          (_) async =>
+                                                              await animationsMap[
+                                                                      'iconOnActionTriggerAnimation']!
+                                                                  .controller
+                                                                  .repeat(
+                                                                      reverse:
+                                                                          true));
+                                                }
                                                 // Register Call
                                                 _model.resgiterResponse =
                                                     await actions
@@ -515,118 +568,164 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                     ),
                                                   );
                                                 } else {
-                                                  // Login After Register
-                                                  _model.loginAfterRegister =
-                                                      await actions
-                                                          .loginWithEmail(
-                                                    _model
-                                                        .emailAddressCreateController
-                                                        .text,
-                                                    _model
-                                                        .passwordCreateController
-                                                        .text,
-                                                  );
-                                                  if (_model.loginAfterRegister
-                                                          ?.error ==
-                                                      true) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          _model
-                                                              .loginAfterRegister!
-                                                              .message,
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .titleSmall
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Inter',
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                        ),
-                                                        duration: const Duration(
-                                                            milliseconds: 4000),
-                                                        backgroundColor:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .error,
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    context.goNamed(
-                                                      'homeScreen',
-                                                      extra: <String, dynamic>{
-                                                        kTransitionInfoKey:
-                                                            const TransitionInfo(
-                                                          hasTransition: true,
-                                                          transitionType:
-                                                              PageTransitionType
-                                                                  .fade,
-                                                          duration: Duration(
-                                                              milliseconds: 0),
-                                                        ),
-                                                      },
-                                                    );
+                                                  // Go to home
 
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .clearSnackBars();
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          _model
-                                                              .resgiterResponse!
-                                                              .message,
-                                                          style: const TextStyle(
-                                                            color: Colors.white,
-                                                          ),
+                                                  context.goNamed('homeScreen');
+
+                                                  // Show success message
+                                                  ScaffoldMessenger.of(context)
+                                                      .clearSnackBars();
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        _model.resgiterResponse!
+                                                            .message,
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
                                                         ),
-                                                        duration: const Duration(
-                                                            milliseconds: 4000),
-                                                        backgroundColor:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .success,
                                                       ),
-                                                    );
-                                                  }
+                                                      duration: const Duration(
+                                                          milliseconds: 4000),
+                                                      backgroundColor:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .success,
+                                                    ),
+                                                  );
+                                                }
+
+                                                // Stop Animation
+                                                if (animationsMap[
+                                                        'iconOnActionTriggerAnimation'] !=
+                                                    null) {
+                                                  animationsMap[
+                                                          'iconOnActionTriggerAnimation']!
+                                                      .controller
+                                                      .stop();
                                                 }
 
                                                 setState(() {});
                                               },
-                                              text: 'Crear cuenta',
-                                              options: FFButtonOptions(
-                                                width: 230.0,
-                                                height: 52.0,
-                                                padding: const EdgeInsetsDirectional
-                                                    .fromSTEB(
-                                                        0.0, 0.0, 0.0, 0.0),
-                                                iconPadding:
-                                                    const EdgeInsetsDirectional
-                                                        .fromSTEB(
-                                                            0.0, 0.0, 0.0, 0.0),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primary,
-                                                textStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .titleSmall
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: Colors.white,
-                                                        ),
-                                                elevation: 3.0,
-                                                borderSide: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 1.0,
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                elevation: 2.0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          24.0),
                                                 ),
-                                                borderRadius:
-                                                    BorderRadius.circular(40.0),
+                                                child: Container(
+                                                  width:
+                                                      MediaQuery.sizeOf(context)
+                                                              .width *
+                                                          0.6,
+                                                  height: 52.0,
+                                                  decoration: BoxDecoration(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            24.0),
+                                                  ),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsetsDirectional
+                                                            .fromSTEB(10.0, 0.0,
+                                                                10.0, 0.0),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Container(
+                                                          width: 35.0,
+                                                          height:
+                                                              double.infinity,
+                                                          decoration:
+                                                              const BoxDecoration(),
+                                                        ),
+                                                        Expanded(
+                                                          child: Container(
+                                                            width: 100.0,
+                                                            height: 100.0,
+                                                            decoration:
+                                                                const BoxDecoration(),
+                                                            child: Align(
+                                                              alignment:
+                                                                  const AlignmentDirectional(
+                                                                      0.0, 0.0),
+                                                              child: Text(
+                                                                'Continuar',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .bodyMedium
+                                                                    .override(
+                                                                      fontFamily:
+                                                                          'Inter',
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          width: 35.0,
+                                                          height: 35.0,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: const Color(
+                                                                0xFF337AEC),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12.0),
+                                                          ),
+                                                          child: Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .max,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              if (_model
+                                                                      .isProcessing ==
+                                                                  true)
+                                                                FaIcon(
+                                                                  FontAwesomeIcons
+                                                                      .circleNotch,
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .info,
+                                                                  size: 22.0,
+                                                                ).animateOnActionTrigger(
+                                                                    animationsMap[
+                                                                        'iconOnActionTriggerAnimation']!,
+                                                                    hasBeenTriggered:
+                                                                        hasIconTriggered),
+                                                              if (_model
+                                                                      .isProcessing ==
+                                                                  false)
+                                                                Icon(
+                                                                  Icons
+                                                                      .arrow_right_alt,
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .info,
+                                                                  size: 24.0,
+                                                                ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),

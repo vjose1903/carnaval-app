@@ -4,6 +4,10 @@ import 'register_page_widget.dart' show RegisterPageWidget;
 import 'package:flutter/material.dart';
 
 class RegisterPageModel extends FlutterFlowModel<RegisterPageWidget> {
+  ///  Local state fields for this page.
+
+  bool isProcessing = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -24,8 +28,6 @@ class RegisterPageModel extends FlutterFlowModel<RegisterPageWidget> {
   String? Function(BuildContext, String?)? passwordConfirmControllerValidator;
   // Stores action output result for [Custom Action - registerWithEmail] action in Button widget.
   AuthResponseStruct? resgiterResponse;
-  // Stores action output result for [Custom Action - loginWithEmail] action in Button widget.
-  AuthResponseStruct? loginAfterRegister;
 
   /// Initialization and disposal methods.
 

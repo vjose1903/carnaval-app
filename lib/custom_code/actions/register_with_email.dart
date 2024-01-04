@@ -29,6 +29,9 @@ Future<AuthResponseStruct> registerWithEmail(
       'email': email,
       'uid': email,
       'created_time': DateTime.now()
+    }).then((value) async {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
     }).catchError((error) {
       print("Error: $error");
       credential.user?.delete();
