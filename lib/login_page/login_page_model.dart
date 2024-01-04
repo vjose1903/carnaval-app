@@ -1,8 +1,13 @@
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'login_page_widget.dart' show LoginPageWidget;
 import 'package:flutter/material.dart';
 
 class LoginPageModel extends FlutterFlowModel<LoginPageWidget> {
+  ///  Local state fields for this page.
+
+  bool isProcessing = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -15,6 +20,8 @@ class LoginPageModel extends FlutterFlowModel<LoginPageWidget> {
   TextEditingController? passwordController;
   late bool passwordVisibility;
   String? Function(BuildContext, String?)? passwordControllerValidator;
+  // Stores action output result for [Custom Action - loginWithEmail] action in Button widget.
+  AuthResponseStruct? loginResponse;
 
   /// Initialization and disposal methods.
 

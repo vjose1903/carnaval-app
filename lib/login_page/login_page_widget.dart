@@ -1,9 +1,14 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'login_page_model.dart';
 export 'login_page_model.dart';
 
@@ -14,10 +19,27 @@ class LoginPageWidget extends StatefulWidget {
   _LoginPageWidgetState createState() => _LoginPageWidgetState();
 }
 
-class _LoginPageWidgetState extends State<LoginPageWidget> {
+class _LoginPageWidgetState extends State<LoginPageWidget>
+    with TickerProviderStateMixin {
   late LoginPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  var hasIconTriggered = false;
+  final animationsMap = {
+    'iconOnActionTriggerAnimation': AnimationInfo(
+      trigger: AnimationTrigger.onActionTrigger,
+      applyInitialState: false,
+      effects: [
+        RotateEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 2000.ms,
+          begin: -5.0,
+          end: 5.0,
+        ),
+      ],
+    ),
+  };
 
   @override
   void initState() {
@@ -29,6 +51,13 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
 
     _model.passwordController ??= TextEditingController();
     _model.passwordFocusNode ??= FocusNode();
+
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
+      this,
+    );
   }
 
   @override
@@ -57,7 +86,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
         onWillPop: () async => false,
         child: Scaffold(
           key: scaffoldKey,
-          backgroundColor: const Color(0xFF262932),
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
           body: Stack(
             children: [
               Align(
@@ -119,8 +148,12 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   15.0, 0.0, 0.0, 5.0),
                               child: Text(
                                 'Eres nuevo aquí',
-                                style:
-                                    FlutterFlowTheme.of(context).headlineMedium,
+                                style: FlutterFlowTheme.of(context)
+                                    .headlineMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      color: Colors.white,
+                                    ),
                               ),
                             ),
                             Padding(
@@ -154,7 +187,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                       24.0, 0.0, 24.0, 0.0),
                                   iconPadding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 0.0),
-                                  color: const Color(0x00105DFB),
+                                  color:
+                                      FlutterFlowTheme.of(context).darkGradient,
                                   textStyle: FlutterFlowTheme.of(context)
                                       .titleSmall
                                       .override(
@@ -224,8 +258,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                   FlutterFlowTheme.of(context)
                                                       .labelMedium,
                                               enabledBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                  color: Color(0xFF797D8B),
+                                                borderSide: BorderSide(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryImputBorder,
                                                   width: 2.0,
                                                 ),
                                                 borderRadius:
@@ -263,11 +299,16 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                     BorderRadius.circular(40.0),
                                               ),
                                               filled: true,
-                                              fillColor: const Color(0xFF33353E),
+                                              fillColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryImputBackground,
                                               contentPadding:
                                                   const EdgeInsets.all(24.0),
-                                              prefixIcon: const Icon(
+                                              prefixIcon: Icon(
                                                 Icons.person_outline,
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryImputBorder,
                                               ),
                                             ),
                                             style: FlutterFlowTheme.of(context)
@@ -300,8 +341,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                   FlutterFlowTheme.of(context)
                                                       .labelMedium,
                                               enabledBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                  color: Color(0xFF797D8B),
+                                                borderSide: BorderSide(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryImputBorder,
                                                   width: 2.0,
                                                 ),
                                                 borderRadius:
@@ -339,11 +382,16 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                     BorderRadius.circular(40.0),
                                               ),
                                               filled: true,
-                                              fillColor: const Color(0xFF33353E),
+                                              fillColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryImputBackground,
                                               contentPadding:
                                                   const EdgeInsets.all(24.0),
-                                              prefixIcon: const Icon(
+                                              prefixIcon: Icon(
                                                 Icons.lock_outlined,
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryImputBorder,
                                               ),
                                               suffixIcon: InkWell(
                                                 onTap: () => setState(
@@ -362,7 +410,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                           .visibility_off_outlined,
                                                   color: FlutterFlowTheme.of(
                                                           context)
-                                                      .secondaryText,
+                                                      .primaryImputBorder,
                                                   size: 24.0,
                                                 ),
                                               ),
@@ -388,22 +436,89 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                             hoverColor: Colors.transparent,
                                             highlightColor: Colors.transparent,
                                             onTap: () async {
-                                              GoRouter.of(context)
-                                                  .prepareAuthEvent();
-
-                                              final user = await authManager
-                                                  .signInWithEmail(
-                                                context,
+                                              // Init Processing
+                                              setState(() {
+                                                _model.isProcessing = true;
+                                              });
+                                              // init animation
+                                              if (animationsMap[
+                                                      'iconOnActionTriggerAnimation'] !=
+                                                  null) {
+                                                setState(() =>
+                                                    hasIconTriggered = true);
+                                                SchedulerBinding.instance
+                                                    .addPostFrameCallback(
+                                                        (_) async =>
+                                                            await animationsMap[
+                                                                    'iconOnActionTriggerAnimation']!
+                                                                .controller
+                                                                .repeat(
+                                                                    reverse:
+                                                                        true));
+                                              }
+                                              // loginCall
+                                              _model.loginResponse =
+                                                  await actions.loginWithEmail(
                                                 _model.emailAddressController
                                                     .text,
                                                 _model.passwordController.text,
                                               );
-                                              if (user == null) {
-                                                return;
+                                              // Hide Icon Process
+                                              setState(() {
+                                                _model.isProcessing = false;
+                                              });
+                                              if (_model.loginResponse?.error ==
+                                                  true) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      _model.loginResponse!
+                                                          .message,
+                                                      style: FlutterFlowTheme
+                                                              .of(context)
+                                                          .titleSmall
+                                                          .override(
+                                                            fontFamily: 'Inter',
+                                                            color: Colors.white,
+                                                          ),
+                                                    ),
+                                                    duration: const Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .error,
+                                                  ),
+                                                );
+                                              } else {
+                                                context.goNamed(
+                                                  'homeScreen',
+                                                  extra: <String, dynamic>{
+                                                    kTransitionInfoKey:
+                                                        const TransitionInfo(
+                                                      hasTransition: true,
+                                                      transitionType:
+                                                          PageTransitionType
+                                                              .fade,
+                                                      duration: Duration(
+                                                          milliseconds: 0),
+                                                    ),
+                                                  },
+                                                );
                                               }
 
-                                              context.goNamedAuth('homeScreen',
-                                                  context.mounted);
+                                              // stop Animation
+                                              if (animationsMap[
+                                                      'iconOnActionTriggerAnimation'] !=
+                                                  null) {
+                                                animationsMap[
+                                                        'iconOnActionTriggerAnimation']!
+                                                    .controller
+                                                    .stop();
+                                              }
+
+                                              setState(() {});
                                             },
                                             child: Material(
                                               color: Colors.transparent,
@@ -457,7 +572,13 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                               'Continuar',
                                                               style: FlutterFlowTheme
                                                                       .of(context)
-                                                                  .bodyMedium,
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
                                                             ),
                                                           ),
                                                         ),
@@ -474,12 +595,40 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                                   .circular(
                                                                       12.0),
                                                         ),
-                                                        child: Icon(
-                                                          Icons.arrow_right_alt,
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .info,
-                                                          size: 24.0,
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            if (_model
+                                                                    .isProcessing ==
+                                                                true)
+                                                              FaIcon(
+                                                                FontAwesomeIcons
+                                                                    .circleNotch,
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .info,
+                                                                size: 22.0,
+                                                              ).animateOnActionTrigger(
+                                                                  animationsMap[
+                                                                      'iconOnActionTriggerAnimation']!,
+                                                                  hasBeenTriggered:
+                                                                      hasIconTriggered),
+                                                            if (_model
+                                                                    .isProcessing ==
+                                                                false)
+                                                              Icon(
+                                                                Icons
+                                                                    .arrow_right_alt,
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .info,
+                                                                size: 24.0,
+                                                              ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ],
@@ -539,7 +688,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                                   .fromSTEB(
                                                       0.0, 0.0, 0.0, 30.0),
                                               child: Text(
-                                                '- O inica sesón con -',
+                                                '- O inica sesión con --',
                                                 textAlign: TextAlign.center,
                                                 style:
                                                     FlutterFlowTheme.of(context)
@@ -690,12 +839,15 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                 child: Container(
                   width: double.infinity,
                   height: 100.0,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0x001D1E25), Color(0xFF12151C)],
-                      stops: [0.0, 1.0],
-                      begin: AlignmentDirectional(0.0, -1.0),
-                      end: AlignmentDirectional(0, 1.0),
+                      colors: [
+                        FlutterFlowTheme.of(context).ligthGradient,
+                        FlutterFlowTheme.of(context).darkGradient
+                      ],
+                      stops: const [0.0, 1.0],
+                      begin: const AlignmentDirectional(0.0, -1.0),
+                      end: const AlignmentDirectional(0, 1.0),
                     ),
                   ),
                 ),

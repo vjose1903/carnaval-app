@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'register_page_model.dart';
@@ -60,31 +61,15 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
         onWillPop: () async => false,
         child: Scaffold(
           key: scaffoldKey,
-          backgroundColor: const Color(0xFF262932),
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
           body: Stack(
             children: [
-              Align(
-                alignment: const AlignmentDirectional(0.0, -1.0),
-                child: Container(
-                  width: double.infinity,
-                  height: 100.0,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF12151C), Color(0x001D1E25)],
-                      stops: [0.0, 1.0],
-                      begin: AlignmentDirectional(0.0, -1.0),
-                      end: AlignmentDirectional(0, 1.0),
-                    ),
-                  ),
-                ),
-              ),
               Align(
                 alignment: const AlignmentDirectional(66.9, 1.85),
                 child: Container(
                   width: 390.0,
                   height: 390.0,
-                  decoration: BoxDecoration(
-                    color: FlutterFlowTheme.of(context).primaryBackground,
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
                   child: Hero(
@@ -101,6 +86,24 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                         'assets/images/circle.png',
                         fit: BoxFit.cover,
                       ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: const AlignmentDirectional(0.0, -1.0),
+                child: Container(
+                  width: double.infinity,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        FlutterFlowTheme.of(context).darkGradient,
+                        FlutterFlowTheme.of(context).ligthGradient
+                      ],
+                      stops: const [0.0, 1.0],
+                      begin: const AlignmentDirectional(0.0, -1.0),
+                      end: const AlignmentDirectional(0, 1.0),
                     ),
                   ),
                 ),
@@ -167,8 +170,10 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                         .bodySmall,
                                                 enabledBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                    color: Color(0xFF797D8B),
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryImputBorder,
                                                     width: 2.0,
                                                   ),
                                                   borderRadius:
@@ -211,11 +216,16 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                           40.0),
                                                 ),
                                                 filled: true,
-                                                fillColor: const Color(0xFF33353E),
+                                                fillColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryImputBackground,
                                                 contentPadding:
                                                     const EdgeInsets.all(24.0),
-                                                prefixIcon: const Icon(
+                                                prefixIcon: Icon(
                                                   Icons.person_outline,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryImputBorder,
                                                 ),
                                               ),
                                               style:
@@ -252,8 +262,10 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                         .bodySmall,
                                                 enabledBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                    color: Color(0xFF797D8B),
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryImputBorder,
                                                     width: 2.0,
                                                   ),
                                                   borderRadius:
@@ -296,11 +308,16 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                           40.0),
                                                 ),
                                                 filled: true,
-                                                fillColor: const Color(0xFF33353E),
+                                                fillColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryImputBackground,
                                                 contentPadding:
                                                     const EdgeInsets.all(24.0),
-                                                prefixIcon: const Icon(
+                                                prefixIcon: Icon(
                                                   Icons.lock_open_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryImputBorder,
                                                 ),
                                                 suffixIcon: InkWell(
                                                   onTap: () => setState(
@@ -357,8 +374,10 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                         .bodySmall,
                                                 enabledBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                    color: Color(0xFF797D8B),
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryImputBorder,
                                                     width: 2.0,
                                                   ),
                                                   borderRadius:
@@ -401,11 +420,16 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                           40.0),
                                                 ),
                                                 filled: true,
-                                                fillColor: const Color(0xFF33353E),
+                                                fillColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryImputBackground,
                                                 contentPadding:
                                                     const EdgeInsets.all(24.0),
-                                                prefixIcon: const Icon(
+                                                prefixIcon: Icon(
                                                   Icons.lock_outlined,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryImputBorder,
                                                 ),
                                                 suffixIcon: InkWell(
                                                   onTap: () => setState(
@@ -448,42 +472,132 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                                     0.0, 30.0, 0.0, 16.0),
                                             child: FFButtonWidget(
                                               onPressed: () async {
-                                                GoRouter.of(context)
-                                                    .prepareAuthEvent();
-                                                if (_model
-                                                        .passwordCreateController
-                                                        .text !=
-                                                    _model
-                                                        .passwordConfirmController
-                                                        .text) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                        'Passwords don\'t match!',
-                                                      ),
-                                                    ),
-                                                  );
-                                                  return;
-                                                }
-
-                                                final user = await authManager
-                                                    .createAccountWithEmail(
-                                                  context,
+                                                // Register Call
+                                                _model.resgiterResponse =
+                                                    await actions
+                                                        .registerWithEmail(
                                                   _model
                                                       .emailAddressCreateController
                                                       .text,
                                                   _model
                                                       .passwordCreateController
                                                       .text,
+                                                  _model
+                                                      .passwordConfirmController
+                                                      .text,
                                                 );
-                                                if (user == null) {
-                                                  return;
+                                                if (_model.resgiterResponse
+                                                        ?.error ==
+                                                    true) {
+                                                  // Show Error Message
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        _model.resgiterResponse!
+                                                            .message,
+                                                        style: FlutterFlowTheme
+                                                                .of(context)
+                                                            .titleSmall
+                                                            .override(
+                                                              fontFamily:
+                                                                  'Inter',
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                      ),
+                                                      duration: const Duration(
+                                                          milliseconds: 4000),
+                                                      backgroundColor:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .error,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  // Login After Register
+                                                  _model.loginAfterRegister =
+                                                      await actions
+                                                          .loginWithEmail(
+                                                    _model
+                                                        .emailAddressCreateController
+                                                        .text,
+                                                    _model
+                                                        .passwordCreateController
+                                                        .text,
+                                                  );
+                                                  if (_model.loginAfterRegister
+                                                          ?.error ==
+                                                      true) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          _model
+                                                              .loginAfterRegister!
+                                                              .message,
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .titleSmall
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Inter',
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                        ),
+                                                        duration: const Duration(
+                                                            milliseconds: 4000),
+                                                        backgroundColor:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .error,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    context.goNamed(
+                                                      'homeScreen',
+                                                      extra: <String, dynamic>{
+                                                        kTransitionInfoKey:
+                                                            const TransitionInfo(
+                                                          hasTransition: true,
+                                                          transitionType:
+                                                              PageTransitionType
+                                                                  .fade,
+                                                          duration: Duration(
+                                                              milliseconds: 0),
+                                                        ),
+                                                      },
+                                                    );
+
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .clearSnackBars();
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          _model
+                                                              .resgiterResponse!
+                                                              .message,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        duration: const Duration(
+                                                            milliseconds: 4000),
+                                                        backgroundColor:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .success,
+                                                      ),
+                                                    );
+                                                  }
                                                 }
 
-                                                context.goNamedAuth(
-                                                    'homeScreen',
-                                                    context.mounted);
+                                                setState(() {});
                                               },
                                               text: 'Crear cuenta',
                                               options: FFButtonOptions(
@@ -708,7 +822,11 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                     'Ya tienes cuenta',
                                     textAlign: TextAlign.end,
                                     style: FlutterFlowTheme.of(context)
-                                        .headlineMedium,
+                                        .headlineMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: Colors.white,
+                                        ),
                                   ),
                                 ),
                                 Padding(
@@ -746,7 +864,8 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget> {
                                       iconPadding:
                                           const EdgeInsetsDirectional.fromSTEB(
                                               0.0, 0.0, 0.0, 0.0),
-                                      color: const Color(0x00105DFB),
+                                      color: FlutterFlowTheme.of(context)
+                                          .darkGradient,
                                       textStyle: FlutterFlowTheme.of(context)
                                           .titleSmall
                                           .override(
