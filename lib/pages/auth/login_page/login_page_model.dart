@@ -1,4 +1,4 @@
-import '/backend/schema/structs/index.dart';
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'login_page_widget.dart' show LoginPageWidget;
 import 'package:flutter/material.dart';
@@ -20,8 +20,10 @@ class LoginPageModel extends FlutterFlowModel<LoginPageWidget> {
   TextEditingController? passwordController;
   late bool passwordVisibility;
   String? Function(BuildContext, String?)? passwordControllerValidator;
-  // Stores action output result for [Custom Action - loginWithEmail] action in Button widget.
+  // Stores action output result for [Custom Action - loginWithEmail] action in ContinuarBTN widget.
   AuthResponseStruct? loginResponse;
+  // Stores action output result for [Firestore Query - Query a collection] action in ContinuarBTN widget.
+  List<GrupoUsuarioRecord>? gruposSeguidos;
 
   /// Initialization and disposal methods.
 

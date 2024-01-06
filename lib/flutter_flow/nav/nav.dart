@@ -73,13 +73,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
       errorBuilder: (context, state) =>
-          appStateNotifier.loggedIn ? const HomeScreenWidget() : const LoginPageWidget(),
+          appStateNotifier.loggedIn ? const FollowGroupWidget() : const LoginPageWidget(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
           builder: (context, _) => appStateNotifier.loggedIn
-              ? const HomeScreenWidget()
+              ? const FollowGroupWidget()
               : const LoginPageWidget(),
         ),
         FFRoute(
@@ -96,6 +96,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: 'registerPage',
           path: '/registerPage',
           builder: (context, params) => const RegisterPageWidget(),
+        ),
+        FFRoute(
+          name: 'followGroup',
+          path: '/followGroup',
+          builder: (context, params) => const FollowGroupWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

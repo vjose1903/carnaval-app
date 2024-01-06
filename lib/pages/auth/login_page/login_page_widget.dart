@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'login_page_model.dart';
 export 'login_page_model.dart';
 
@@ -78,6 +80,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
       );
     }
 
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -90,29 +94,19 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
           body: Stack(
             children: [
               Align(
-                alignment: const AlignmentDirectional(-66.9, -1.75),
+                alignment: const AlignmentDirectional(-1.0, -1.0),
                 child: Container(
-                  width: 390.0,
-                  height: 390.0,
+                  width: MediaQuery.sizeOf(context).width * 0.75,
+                  height: MediaQuery.sizeOf(context).height * 0.27,
                   decoration: BoxDecoration(
-                    color: FlutterFlowTheme.of(context).primaryBackground,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Hero(
-                    tag: 'authCircle',
-                    transitionOnUserGestures: true,
-                    child: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                      ),
-                      child: Image.asset(
-                        'assets/images/circle.png',
-                        fit: BoxFit.cover,
-                      ),
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(0.0),
+                      bottomRight: Radius.circular(300.0),
+                      topLeft: Radius.circular(0.0),
+                      topRight: Radius.circular(0.0),
                     ),
+                    shape: BoxShape.rectangle,
                   ),
                 ),
               ),
@@ -492,20 +486,64 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
                                                   ),
                                                 );
                                               } else {
-                                                context.goNamed(
-                                                  'homeScreen',
-                                                  extra: <String, dynamic>{
-                                                    kTransitionInfoKey:
-                                                        const TransitionInfo(
-                                                      hasTransition: true,
-                                                      transitionType:
-                                                          PageTransitionType
-                                                              .fade,
-                                                      duration: Duration(
-                                                          milliseconds: 0),
-                                                    ),
-                                                  },
+                                                // Buscar los grupos que sigue el usuario
+                                                _model.gruposSeguidos =
+                                                    await queryGrupoUsuarioRecordOnce(
+                                                  queryBuilder:
+                                                      (grupoUsuarioRecord) =>
+                                                          grupoUsuarioRecord
+                                                              .where(
+                                                    'usuario',
+                                                    isEqualTo:
+                                                        currentUserReference,
+                                                  ),
                                                 );
+                                                if (_model.gruposSeguidos.isEmpty) {
+                                                  // Ir a seguir Grupo
+
+                                                  context.goNamed(
+                                                    'followGroup',
+                                                    extra: <String, dynamic>{
+                                                      kTransitionInfoKey:
+                                                          const TransitionInfo(
+                                                        hasTransition: true,
+                                                        transitionType:
+                                                            PageTransitionType
+                                                                .fade,
+                                                        duration: Duration(
+                                                            milliseconds: 0),
+                                                      ),
+                                                    },
+                                                  );
+                                                } else {
+                                                  // Agregar grupos Seguidos al state
+                                                  setState(() {
+                                                    FFAppState()
+                                                            .gruposSeguidos =
+                                                        _model.gruposSeguidos!
+                                                            .map((e) => e.grupo)
+                                                            .withoutNulls
+                                                            .toList()
+                                                            .cast<
+                                                                DocumentReference>();
+                                                  });
+                                                  // Ir a Home
+
+                                                  context.goNamed(
+                                                    'homeScreen',
+                                                    extra: <String, dynamic>{
+                                                      kTransitionInfoKey:
+                                                          const TransitionInfo(
+                                                        hasTransition: true,
+                                                        transitionType:
+                                                            PageTransitionType
+                                                                .fade,
+                                                        duration: Duration(
+                                                            milliseconds: 0),
+                                                      ),
+                                                    },
+                                                  );
+                                                }
                                               }
 
                                               // stop Animation
@@ -729,7 +767,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
                                                       }
 
                                                       context.goNamedAuth(
-                                                          'homeScreen',
+                                                          'followGroup',
                                                           context.mounted);
                                                     },
                                                     child: Material(

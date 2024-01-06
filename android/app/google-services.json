@@ -12,7 +12,20 @@
           "package_name": "com.inspot.technology.carnavalapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "186859224506-1t6q5gnh1oeg9s4ccvfe12j5cesm8ola.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inspot.technology.carnavalapp",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "186859224506-k0ccbf164eq3oibr87rorj2bopm8902h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDNLAZkm8bAZgHeuTKfPWMiC_qVe5Nbs_s"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "186859224506-k0ccbf164eq3oibr87rorj2bopm8902h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "186859224506-tmlf9eernlg1vb63u8us6njnruds5b1i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.inspot.technology.carnavalapp"
+              }
+            }
+          ]
         }
       }
     }

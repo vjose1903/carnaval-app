@@ -1,3 +1,4 @@
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'home_screen_widget.dart' show HomeScreenWidget;
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ class HomeScreenModel extends FlutterFlowModel<HomeScreenWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
+  // Stores action output result for [Backend Call - Read Document] action in homeScreen widget.
+  GrupoRecord? grupoSeleccinadResult;
 
   /// Initialization and disposal methods.
 

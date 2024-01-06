@@ -1,6 +1,7 @@
 // Automatic FlutterFlow imports
 import '/backend/backend.dart';
 import '/backend/schema/structs/index.dart';
+import '/backend/schema/enums/enums.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'index.dart'; // Imports other custom actions
@@ -16,6 +17,7 @@ Future<AuthResponseStruct> loginWithEmail(
   String password,
 ) async {
   try {
+    print("-- LOGIN --");
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
 

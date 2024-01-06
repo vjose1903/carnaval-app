@@ -36,6 +36,7 @@ abstract class FlutterFlowTheme {
   late Color primaryImputBackground;
   late Color darkGradient;
   late Color ligthGradient;
+  late Color disablePrimaryColor;
 
   @Deprecated('Use displaySmallFamily instead')
   String get title1Family => displaySmallFamily;
@@ -129,6 +130,7 @@ class LightModeTheme extends FlutterFlowTheme {
   late Color primaryImputBackground = const Color(0xFF33353E);
   late Color darkGradient = const Color(0xFF12151C);
   late Color ligthGradient = const Color(0x001D1E25);
+  late Color disablePrimaryColor = const Color(0xFF4074E6);
 }
 
 abstract class Typography {
