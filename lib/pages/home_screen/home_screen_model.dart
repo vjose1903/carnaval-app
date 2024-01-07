@@ -8,7 +8,7 @@ class HomeScreenModel extends FlutterFlowModel<HomeScreenWidget> {
 
   final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - Read Document] action in homeScreen widget.
-  GrupoRecord? grupoSeleccinadResult;
+  GrupoRecord? grupoSeleccinadoResult;
 
   /// Initialization and disposal methods.
 

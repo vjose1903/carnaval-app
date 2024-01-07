@@ -39,12 +39,18 @@ class GrupoUsuarioRecord extends FirestoreRecord {
   String get qr => _qr ?? '';
   bool hasQr() => _qr != null;
 
+  // "created_time" field.
+  DateTime? _createdTime;
+  DateTime? get createdTime => _createdTime;
+  bool hasCreatedTime() => _createdTime != null;
+
   void _initializeFields() {
     _grupo = snapshotData['grupo'] as DocumentReference?;
     _usuario = snapshotData['usuario'] as DocumentReference?;
     _tipoUsuario = snapshotData['tipo_usuario'] as DocumentReference?;
     _createdBy = snapshotData['created_by'] as DocumentReference?;
     _qr = snapshotData['qr'] as String?;
+    _createdTime = snapshotData['created_time'] as DateTime?;
   }
 
   static CollectionReference get collection =>
@@ -87,6 +93,7 @@ Map<String, dynamic> createGrupoUsuarioRecordData({
   DocumentReference? tipoUsuario,
   DocumentReference? createdBy,
   String? qr,
+  DateTime? createdTime,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -95,6 +102,7 @@ Map<String, dynamic> createGrupoUsuarioRecordData({
       'tipo_usuario': tipoUsuario,
       'created_by': createdBy,
       'qr': qr,
+      'created_time': createdTime,
     }.withoutNulls,
   );
 
@@ -111,12 +119,19 @@ class GrupoUsuarioRecordDocumentEquality
         e1?.usuario == e2?.usuario &&
         e1?.tipoUsuario == e2?.tipoUsuario &&
         e1?.createdBy == e2?.createdBy &&
-        e1?.qr == e2?.qr;
+        e1?.qr == e2?.qr &&
+        e1?.createdTime == e2?.createdTime;
   }
 
   @override
-  int hash(GrupoUsuarioRecord? e) => const ListEquality()
-      .hash([e?.grupo, e?.usuario, e?.tipoUsuario, e?.createdBy, e?.qr]);
+  int hash(GrupoUsuarioRecord? e) => const ListEquality().hash([
+        e?.grupo,
+        e?.usuario,
+        e?.tipoUsuario,
+        e?.createdBy,
+        e?.qr,
+        e?.createdTime
+      ]);
 
   @override
   bool isValidKey(Object? o) => o is GrupoUsuarioRecord;

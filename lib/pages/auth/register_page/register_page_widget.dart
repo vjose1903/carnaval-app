@@ -822,7 +822,7 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget>
                                                         }
 
                                                         context.goNamedAuth(
-                                                            'followGroup',
+                                                            'homeScreen',
                                                             context.mounted);
                                                       },
                                                       child: Material(

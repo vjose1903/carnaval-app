@@ -70,7 +70,12 @@ class _GrupoOptionWidgetState extends State<GrupoOptionWidget> {
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
-                color: FlutterFlowTheme.of(context).primaryBackground,
+                color: valueOrDefault<Color>(
+                  FFAppState().grupoSeleccionado == widget.grupoOption
+                      ? FlutterFlowTheme.of(context).selectedOption
+                      : FlutterFlowTheme.of(context).noSelectedOption,
+                  FlutterFlowTheme.of(context).noSelectedOption,
+                ),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: MouseRegion(
@@ -94,7 +99,7 @@ class _GrupoOptionWidgetState extends State<GrupoOptionWidget> {
                           child: Image.network(
                             valueOrDefault<String>(
                               containerGrupoRecord.logo,
-                              'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/no-photo.jpg?alt=media&token=5581cd4d-c440-4269-b3b9-fbff559d40e3',
+                              'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fno_img_es_2.png?alt=media&token=5bf4ad9f-66fb-4272-83d2-73fef986362d',
                             ),
                             width: double.infinity,
                             height: double.infinity,

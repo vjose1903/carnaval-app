@@ -14,7 +14,6 @@ Future<bool> grupoUsuarioDBAction(
   DocumentReference grupoReference,
   String type,
 ) async {
-  // Add your function code here!
   CollectionReference grupoUsuarioCollection =
       FirebaseFirestore.instance.collection('grupo_usuario');
 
@@ -23,31 +22,55 @@ Future<bool> grupoUsuarioDBAction(
       .where("grupo", isEqualTo: grupoReference)
       .limit(1)
       .get()
-      .then((QuerySnapshot querySnapshot) {
+      .then((QuerySnapshot querySnapshot) async {
     if (querySnapshot.docs.isNotEmpty) {
-      // Si la lista de documentos no está vacía, significa que se encontró al menos un documento
+      // Grupo Usuario Existe
       print("El documento existe en la base de datos");
-      var primerDocumento = querySnapshot.docs.first;
-      print("Document data: ${primerDocumento.data()}");
+      var grupo_usuario = querySnapshot.docs.first;
+      print("Document data: ${grupo_usuario.data()}");
 
       if (type == 'remove') {
         print("procediendo a removerlo");
+
+        grupo_usuario.reference.delete().then((_) {
+          return true;
+        }).catchError((error) {
+          return false;
+        });
       } else {
-        print("no hacer nada");
+        return true;
       }
     } else {
-      // La lista de documentos está vacía, el documento no existe
-      print("El documento no existe en la base de datos");
+      // Grupo Usuario No existe
 
       if (type == 'add') {
-        print("procediendo a agregarlo");
+        DocumentReference? usuarioRegularReference =
+            await getTipoUsuarioByDescripcion('Usuario regular');
+
+        if (usuarioRegularReference != null) {
+          int fechaInt = DateTime.now().millisecondsSinceEpoch;
+
+          grupoUsuarioCollection.add({
+            'usuario': usuarioReference,
+            'grupo': grupoReference,
+            'tipo_usuario': usuarioRegularReference,
+            'created_time': DateTime.now(),
+            'qr':
+                'usuario-${usuarioReference.id}-grupo-${grupoReference.id}-${fechaInt}'
+          }).then((value) async {
+            return true;
+          }).catchError((error) {
+            print("Error: $error");
+            return false;
+          });
+        } else {
+          return false;
+        }
       } else {
-        print("no hacer nada");
+        return true;
       }
     }
   });
 
-  // current_grupo_usuario = grupoUsuarioCollection
-  // credential.user?.delete();
   return true;
 }

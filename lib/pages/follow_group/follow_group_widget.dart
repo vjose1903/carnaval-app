@@ -289,59 +289,127 @@ class _FollowGroupWidgetState extends State<FollowGroupWidget>
                                                         listViewGrupoRecord
                                                             .reference) ==
                                                 true) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'a remover grupo',
-                                                    style: TextStyle(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primaryText,
-                                                    ),
-                                                  ),
-                                                  duration: const Duration(
-                                                      milliseconds: 4000),
-                                                  backgroundColor:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .error,
-                                                ),
-                                              );
                                               _model.isRemoved = await actions
                                                   .grupoUsuarioDBAction(
                                                 currentUserReference!,
                                                 listViewGrupoRecord.reference,
                                                 'remove',
                                               );
-                                            } else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'a agregar grupo',
-                                                    style: TextStyle(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primaryText,
+                                              if (_model.isRemoved!) {
+                                                // Show Msg Success
+                                                ScaffoldMessenger.of(context)
+                                                    .clearSnackBars();
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Dejaste de seguir grupo',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                      ),
                                                     ),
+                                                    duration: const Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .success,
                                                   ),
-                                                  duration: const Duration(
-                                                      milliseconds: 4000),
-                                                  backgroundColor:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .success,
-                                                ),
-                                              );
+                                                );
+                                                // Remover grupo del state
+                                                setState(() {
+                                                  FFAppState()
+                                                      .removeFromGruposSeguidos(
+                                                          listViewGrupoRecord
+                                                              .reference);
+                                                });
+                                              } else {
+                                                // Show Msg Error
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Error, vuelva a intentarlo ',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                      ),
+                                                    ),
+                                                    duration: const Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .error,
+                                                  ),
+                                                );
+                                              }
+                                            } else {
                                               _model.isAdded = await actions
                                                   .grupoUsuarioDBAction(
                                                 currentUserReference!,
                                                 listViewGrupoRecord.reference,
                                                 'add',
                                               );
+                                              if (_model.isAdded!) {
+                                                // Show Msg Success
+                                                ScaffoldMessenger.of(context)
+                                                    .clearSnackBars();
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Siguiendo grupo',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                      ),
+                                                    ),
+                                                    duration: const Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .success,
+                                                  ),
+                                                );
+                                                // Agregar grupo al state
+                                                setState(() {
+                                                  FFAppState()
+                                                      .addToGruposSeguidos(
+                                                          listViewGrupoRecord
+                                                              .reference);
+                                                });
+                                              } else {
+                                                // Show Msg Error
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Error, vuelva a intentarlo ',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                      ),
+                                                    ),
+                                                    duration: const Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .error,
+                                                  ),
+                                                );
+                                              }
                                             }
 
                                             setState(() {});
@@ -356,9 +424,14 @@ class _FollowGroupWidgetState extends State<FollowGroupWidget>
                                                         .contains(
                                                             listViewGrupoRecord
                                                                 .reference)
-                                                    ? const Color(0x8C2D316B)
-                                                    : const Color(0x8C1D1E25),
-                                                const Color(0x8C1D1E25),
+                                                    ? FlutterFlowTheme.of(
+                                                            context)
+                                                        .selectedOption
+                                                    : FlutterFlowTheme.of(
+                                                            context)
+                                                        .noSelectedOption,
+                                                FlutterFlowTheme.of(context)
+                                                    .noSelectedOption,
                                               ),
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
@@ -433,8 +506,18 @@ class _FollowGroupWidgetState extends State<FollowGroupWidget>
                           child: FFButtonWidget(
                             onPressed: (FFAppState().gruposSeguidos.isEmpty)
                                 ? null
-                                : () {
-                                    print('Button pressed ...');
+                                : () async {
+                                    context.goNamed(
+                                      'homeScreen',
+                                      extra: <String, dynamic>{
+                                        kTransitionInfoKey: const TransitionInfo(
+                                          hasTransition: true,
+                                          transitionType:
+                                              PageTransitionType.fade,
+                                          duration: Duration(milliseconds: 0),
+                                        ),
+                                      },
+                                    );
                                   },
                             text: 'Continuar',
                             options: FFButtonOptions(
@@ -462,35 +545,6 @@ class _FollowGroupWidgetState extends State<FollowGroupWidget>
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    FFButtonWidget(
-                      onPressed: () async {
-                        GoRouter.of(context).prepareAuthEvent();
-                        await authManager.signOut();
-                        GoRouter.of(context).clearRedirectLocation();
-
-                        context.goNamedAuth('loginPage', context.mounted);
-                      },
-                      text: 'LogOut',
-                      options: FFButtonOptions(
-                        height: 40.0,
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            24.0, 0.0, 24.0, 0.0),
-                        iconPadding:
-                            const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        color: FlutterFlowTheme.of(context).primary,
-                        textStyle:
-                            FlutterFlowTheme.of(context).titleSmall.override(
-                                  fontFamily: 'Inter',
-                                  color: Colors.white,
-                                ),
-                        elevation: 3.0,
-                        borderSide: const BorderSide(
-                          color: Colors.transparent,
-                          width: 1.0,
-                        ),
-                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                   ],

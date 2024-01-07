@@ -767,7 +767,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
                                                       }
 
                                                       context.goNamedAuth(
-                                                          'followGroup',
+                                                          'homeScreen',
                                                           context.mounted);
                                                     },
                                                     child: Material(
