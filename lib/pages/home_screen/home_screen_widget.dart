@@ -3,7 +3,6 @@ import '/backend/backend.dart';
 import '/components/select_group/select_group_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,43 +30,15 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      if (FFAppState().gruposSeguidos.isNotEmpty) {
-        if (FFAppState().gruposSeguidos.length == 1) {
-          // Find Group
-          _model.grupoSeleccinadoResult = await GrupoRecord.getDocumentOnce(
-              FFAppState().gruposSeguidos.first);
-          // Select First Group
-          setState(() {
-            FFAppState().grupoSeleccionado =
-                _model.grupoSeleccinadoResult?.reference;
-          });
-        } else {
-          if (!(FFAppState().grupoSeleccionado != null)) {
-            // Open Bottom sheet
-            await showModalBottomSheet(
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              useSafeArea: true,
-              context: context,
-              builder: (context) {
-                return GestureDetector(
-                  onTap: () => _model.unfocusNode.canRequestFocus
-                      ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-                      : FocusScope.of(context).unfocus(),
-                  child: Padding(
-                    padding: MediaQuery.viewInsetsOf(context),
-                    child: SizedBox(
-                      height: MediaQuery.sizeOf(context).height * 0.7,
-                      child: const SelectGroupWidget(),
-                    ),
-                  ),
-                );
-              },
-            ).then((value) => safeSetState(() {}));
-          }
-        }
-      } else {
-        // Go to Follow Group
+      // Buscar los grupos que sigue el usuario
+      _model.finUserGruposSeguidos = await queryGrupoUsuarioRecordOnce(
+        queryBuilder: (grupoUsuarioRecord) => grupoUsuarioRecord.where(
+          'usuario',
+          isEqualTo: currentUserReference,
+        ),
+      );
+      if (_model.finUserGruposSeguidos.isEmpty) {
+        // Ir a seguir Grupo
 
         context.goNamed(
           'followGroup',
@@ -79,6 +50,78 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
             ),
           },
         );
+
+        // clean appStage
+        setState(() {
+          FFAppState().gruposSeguidos = [];
+          FFAppState().grupoSeleccionado = null;
+        });
+      } else {
+        // Set grupos followed
+        setState(() {
+          FFAppState().gruposSeguidos = _model.finUserGruposSeguidos!
+              .map((e) => e.grupo)
+              .withoutNulls
+              .toList()
+              .toList()
+              .cast<DocumentReference>();
+        });
+        if (FFAppState().gruposSeguidos.isNotEmpty) {
+          if (FFAppState().gruposSeguidos.length == 1) {
+            // Find Group
+            _model.findGrupoSelectedResult = await GrupoRecord.getDocumentOnce(
+                FFAppState().gruposSeguidos.first);
+            // Select First Group
+            setState(() {
+              FFAppState().grupoSeleccionado =
+                  _model.findGrupoSelectedResult?.reference;
+            });
+          } else {
+            if (!(FFAppState().grupoSeleccionado != null)) {
+              // Open Bottom sheet
+              await showModalBottomSheet(
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                useSafeArea: true,
+                context: context,
+                builder: (context) {
+                  return GestureDetector(
+                    onTap: () => _model.unfocusNode.canRequestFocus
+                        ? FocusScope.of(context)
+                            .requestFocus(_model.unfocusNode)
+                        : FocusScope.of(context).unfocus(),
+                    child: Padding(
+                      padding: MediaQuery.viewInsetsOf(context),
+                      child: SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.7,
+                        child: const SelectGroupWidget(),
+                      ),
+                    ),
+                  );
+                },
+              ).then((value) => safeSetState(() {}));
+            }
+          }
+        } else {
+          // Go to Follow Group
+
+          context.goNamed(
+            'followGroup',
+            extra: <String, dynamic>{
+              kTransitionInfoKey: const TransitionInfo(
+                hasTransition: true,
+                transitionType: PageTransitionType.fade,
+                duration: Duration(milliseconds: 0),
+              ),
+            },
+          );
+
+          // clean appStage
+          setState(() {
+            FFAppState().gruposSeguidos = [];
+            FFAppState().grupoSeleccionado = null;
+          });
+        }
       }
     });
   }
@@ -154,7 +197,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                       valueOrDefault<String>(
                         FFAppState().grupoSeleccionado?.id != null &&
                                 FFAppState().grupoSeleccionado?.id != ''
-                            ? _model.grupoSeleccinadoResult?.nombre
+                            ? _model.findGrupoSelectedResult?.nombre
                             : 'Seleccione grupo',
                         'Seleccione grupo',
                       ).maybeHandleOverflow(
@@ -187,32 +230,39 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                         },
                       );
                     },
-                    child: Container(
-                      width: 40.0,
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).selectedOption,
-                          width: 1.0,
+                    child: ClipOval(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 100),
+                        curve: Curves.easeInOut,
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(context).selectedOption,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
-                      child: Align(
                         alignment: const AlignmentDirectional(0.0, 0.0),
                         child: AuthUserStreamWidget(
-                          builder: (context) => Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            clipBehavior: Clip.antiAlias,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
+                          builder: (context) => Hero(
+                            tag: valueOrDefault<String>(
+                              currentUserPhoto,
+                              'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fuser.png?alt=media&token=765cad05-627d-4fdd-8621-d333ecf3271a',
                             ),
-                            child: Image.network(
-                              valueOrDefault<String>(
-                                currentUserPhoto,
-                                'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fuser.png?alt=media&token=765cad05-627d-4fdd-8621-d333ecf3271a',
+                            transitionOnUserGestures: true,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.network(
+                                valueOrDefault<String>(
+                                  currentUserPhoto,
+                                  'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fuser.png?alt=media&token=765cad05-627d-4fdd-8621-d333ecf3271a',
+                                ),
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
                               ),
-                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -234,48 +284,10 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                   width: double.infinity,
                   height: double.infinity,
                   decoration: const BoxDecoration(),
-                  child: Column(
+                  child: const Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Hello World.',
-                        style: FlutterFlowTheme.of(context).bodyMedium,
-                      ),
-                      Text(
-                        currentUserEmail,
-                        style: FlutterFlowTheme.of(context).bodyMedium,
-                      ),
-                      FFButtonWidget(
-                        onPressed: () async {
-                          GoRouter.of(context).prepareAuthEvent();
-                          await authManager.signOut();
-                          GoRouter.of(context).clearRedirectLocation();
-
-                          context.goNamedAuth('loginPage', context.mounted);
-                        },
-                        text: 'LogOut',
-                        options: FFButtonOptions(
-                          height: 40.0,
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              24.0, 0.0, 24.0, 0.0),
-                          iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 0.0, 0.0),
-                          color: FlutterFlowTheme.of(context).primary,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleSmall.override(
-                                    fontFamily: 'Inter',
-                                    color: Colors.white,
-                                  ),
-                          elevation: 3.0,
-                          borderSide: const BorderSide(
-                            color: Colors.transparent,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                    ],
+                    children: [],
                   ),
                 ),
               );

@@ -1,5 +1,4 @@
 import '/auth/firebase_auth/auth_util.dart';
-import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -524,6 +523,7 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget>
                                                 _model.resgiterResponse =
                                                     await actions
                                                         .registerWithEmail(
+                                                  context,
                                                   _model
                                                       .emailAddressCreateController
                                                       .text,
@@ -534,6 +534,19 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget>
                                                       .passwordConfirmController
                                                       .text,
                                                 );
+                                                // stop animation
+                                                if (animationsMap[
+                                                        'iconOnActionTriggerAnimation'] !=
+                                                    null) {
+                                                  animationsMap[
+                                                          'iconOnActionTriggerAnimation']!
+                                                      .controller
+                                                      .stop();
+                                                }
+                                                // stop Processing
+                                                setState(() {
+                                                  _model.isProcessing = false;
+                                                });
                                                 if (_model.resgiterResponse
                                                         ?.error ==
                                                     true) {
@@ -563,54 +576,6 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget>
                                                     ),
                                                   );
                                                 } else {
-                                                  // Buscar los grupos que sigue el usuario
-                                                  _model.gruposSeguidos =
-                                                      await queryGrupoUsuarioRecordOnce(
-                                                    queryBuilder:
-                                                        (grupoUsuarioRecord) =>
-                                                            grupoUsuarioRecord
-                                                                .where(
-                                                      'usuario',
-                                                      isEqualTo:
-                                                          currentUserReference,
-                                                    ),
-                                                  );
-                                                  if (_model.gruposSeguidos.isEmpty) {
-                                                    // Ir a seguir Grupo
-
-                                                    context.goNamed(
-                                                      'followGroup',
-                                                      extra: <String, dynamic>{
-                                                        kTransitionInfoKey:
-                                                            const TransitionInfo(
-                                                          hasTransition: true,
-                                                          transitionType:
-                                                              PageTransitionType
-                                                                  .fade,
-                                                          duration: Duration(
-                                                              milliseconds: 0),
-                                                        ),
-                                                      },
-                                                    );
-                                                  } else {
-                                                    // Ir a Home
-
-                                                    context.goNamed(
-                                                      'homeScreen',
-                                                      extra: <String, dynamic>{
-                                                        kTransitionInfoKey:
-                                                            const TransitionInfo(
-                                                          hasTransition: true,
-                                                          transitionType:
-                                                              PageTransitionType
-                                                                  .fade,
-                                                          duration: Duration(
-                                                              milliseconds: 0),
-                                                        ),
-                                                      },
-                                                    );
-                                                  }
-
                                                   // Show success message
                                                   ScaffoldMessenger.of(context)
                                                       .clearSnackBars();
@@ -632,16 +597,21 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget>
                                                               .success,
                                                     ),
                                                   );
-                                                }
 
-                                                // Stop Animation
-                                                if (animationsMap[
-                                                        'iconOnActionTriggerAnimation'] !=
-                                                    null) {
-                                                  animationsMap[
-                                                          'iconOnActionTriggerAnimation']!
-                                                      .controller
-                                                      .stop();
+                                                  context.goNamed(
+                                                    'homeScreen',
+                                                    extra: <String, dynamic>{
+                                                      kTransitionInfoKey:
+                                                          const TransitionInfo(
+                                                        hasTransition: true,
+                                                        transitionType:
+                                                            PageTransitionType
+                                                                .leftToRight,
+                                                        duration: Duration(
+                                                            milliseconds: 500),
+                                                      ),
+                                                    },
+                                                  );
                                                 }
 
                                                 setState(() {});
@@ -873,44 +843,98 @@ class _RegisterPageWidgetState extends State<RegisterPageWidget>
                                                         ),
                                                       ),
                                                     ),
-                                                    Material(
-                                                      color: Colors.transparent,
-                                                      elevation: 2.0,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20.0),
-                                                      ),
-                                                      child: Container(
-                                                        width: 64.0,
-                                                        height: 64.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryBackground,
+                                                    InkWell(
+                                                      splashColor:
+                                                          Colors.transparent,
+                                                      focusColor:
+                                                          Colors.transparent,
+                                                      hoverColor:
+                                                          Colors.transparent,
+                                                      highlightColor:
+                                                          Colors.transparent,
+                                                      onTap: () async {
+                                                        GoRouter.of(context)
+                                                            .prepareAuthEvent();
+                                                        if (_model
+                                                                .passwordCreateController
+                                                                .text !=
+                                                            _model
+                                                                .passwordConfirmController
+                                                                .text) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            const SnackBar(
+                                                              content: Text(
+                                                                'Passwords don\'t match!',
+                                                              ),
+                                                            ),
+                                                          );
+                                                          return;
+                                                        }
+
+                                                        final user =
+                                                            await authManager
+                                                                .createAccountWithEmail(
+                                                          context,
+                                                          _model
+                                                              .emailAddressCreateController
+                                                              .text,
+                                                          _model
+                                                              .passwordCreateController
+                                                              .text,
+                                                        );
+                                                        if (user == null) {
+                                                          return;
+                                                        }
+
+                                                        context.goNamedAuth(
+                                                            'homeScreen',
+                                                            context.mounted);
+                                                      },
+                                                      child: Material(
+                                                        color:
+                                                            Colors.transparent,
+                                                        elevation: 2.0,
+                                                        shape:
+                                                            RoundedRectangleBorder(
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(
                                                                       20.0),
                                                         ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                  12.0),
-                                                          child: ClipRRect(
+                                                        child: Container(
+                                                          width: 64.0,
+                                                          height: 64.0,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .secondaryBackground,
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
-                                                                        8.0),
-                                                            child: Image.asset(
-                                                              'assets/images/colo_fb_icon.png',
-                                                              width: double
-                                                                  .infinity,
-                                                              height: double
-                                                                  .infinity,
-                                                              fit: BoxFit.fill,
+                                                                        20.0),
+                                                          ),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                    12.0),
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8.0),
+                                                              child:
+                                                                  Image.asset(
+                                                                'assets/images/colo_fb_icon.png',
+                                                                width: double
+                                                                    .infinity,
+                                                                height: double
+                                                                    .infinity,
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),

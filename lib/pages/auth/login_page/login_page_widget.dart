@@ -1,5 +1,4 @@
 import '/auth/firebase_auth/auth_util.dart';
-import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -430,11 +429,11 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
                                             hoverColor: Colors.transparent,
                                             highlightColor: Colors.transparent,
                                             onTap: () async {
-                                              // Init Processing
+                                              // change IsProcesing
                                               setState(() {
                                                 _model.isProcessing = true;
                                               });
-                                              // init animation
+                                              // startr animation
                                               if (animationsMap[
                                                       'iconOnActionTriggerAnimation'] !=
                                                   null) {
@@ -457,12 +456,18 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
                                                     .text,
                                                 _model.passwordController.text,
                                               );
-                                              // Hide Icon Process
-                                              setState(() {
-                                                _model.isProcessing = false;
-                                              });
+                                              // Stop Animation
+                                              if (animationsMap[
+                                                      'iconOnActionTriggerAnimation'] !=
+                                                  null) {
+                                                animationsMap[
+                                                        'iconOnActionTriggerAnimation']!
+                                                    .controller
+                                                    .stop();
+                                              }
                                               if (_model.loginResponse?.error ==
                                                   true) {
+                                                // Show Error MSG
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
@@ -486,74 +491,22 @@ class _LoginPageWidgetState extends State<LoginPageWidget>
                                                   ),
                                                 );
                                               } else {
-                                                // Buscar los grupos que sigue el usuario
-                                                _model.gruposSeguidos =
-                                                    await queryGrupoUsuarioRecordOnce(
-                                                  queryBuilder:
-                                                      (grupoUsuarioRecord) =>
-                                                          grupoUsuarioRecord
-                                                              .where(
-                                                    'usuario',
-                                                    isEqualTo:
-                                                        currentUserReference,
-                                                  ),
+                                                // Go to Login
+
+                                                context.goNamed(
+                                                  'homeScreen',
+                                                  extra: <String, dynamic>{
+                                                    kTransitionInfoKey:
+                                                        const TransitionInfo(
+                                                      hasTransition: true,
+                                                      transitionType:
+                                                          PageTransitionType
+                                                              .leftToRight,
+                                                      duration: Duration(
+                                                          milliseconds: 500),
+                                                    ),
+                                                  },
                                                 );
-                                                if (_model.gruposSeguidos.isEmpty) {
-                                                  // Ir a seguir Grupo
-
-                                                  context.goNamed(
-                                                    'followGroup',
-                                                    extra: <String, dynamic>{
-                                                      kTransitionInfoKey:
-                                                          const TransitionInfo(
-                                                        hasTransition: true,
-                                                        transitionType:
-                                                            PageTransitionType
-                                                                .fade,
-                                                        duration: Duration(
-                                                            milliseconds: 0),
-                                                      ),
-                                                    },
-                                                  );
-                                                } else {
-                                                  // Agregar grupos Seguidos al state
-                                                  setState(() {
-                                                    FFAppState()
-                                                            .gruposSeguidos =
-                                                        _model.gruposSeguidos!
-                                                            .map((e) => e.grupo)
-                                                            .withoutNulls
-                                                            .toList()
-                                                            .cast<
-                                                                DocumentReference>();
-                                                  });
-                                                  // Ir a Home
-
-                                                  context.goNamed(
-                                                    'homeScreen',
-                                                    extra: <String, dynamic>{
-                                                      kTransitionInfoKey:
-                                                          const TransitionInfo(
-                                                        hasTransition: true,
-                                                        transitionType:
-                                                            PageTransitionType
-                                                                .fade,
-                                                        duration: Duration(
-                                                            milliseconds: 0),
-                                                      ),
-                                                    },
-                                                  );
-                                                }
-                                              }
-
-                                              // stop Animation
-                                              if (animationsMap[
-                                                      'iconOnActionTriggerAnimation'] !=
-                                                  null) {
-                                                animationsMap[
-                                                        'iconOnActionTriggerAnimation']!
-                                                    .controller
-                                                    .stop();
                                               }
 
                                               setState(() {});

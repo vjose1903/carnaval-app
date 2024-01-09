@@ -20,7 +20,7 @@ Future<AuthResponseStruct> loginWithEmail(
     print("-- LOGIN --");
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
-
+    print("-- SE HIZO LOGIN --");
     return LoginResult("", false);
   } on FirebaseAuthException catch (e) {
     // Manejar errores específicos de Firebase Authentication

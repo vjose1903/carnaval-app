@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 // Begin custom action code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
+import '/auth/firebase_auth/auth_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 Future<AuthResponseStruct> registerWithEmail(
+  BuildContext context,
   String email,
   String password,
   String confirmPassword,
@@ -26,15 +28,17 @@ Future<AuthResponseStruct> registerWithEmail(
     CollectionReference usersCollection =
         FirebaseFirestore.instance.collection('Usuarios');
 
-    usersCollection.add({
+    final userData = <String, dynamic>{
       'email': email,
-      'uid': email,
+      'uid': credential.user?.uid,
       'created_time': DateTime.now()
-    }).then((value) async {
+    };
+
+    usersCollection.doc(credential.user?.uid).set(userData).then((value) async {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-    }).catchError((error) {
-      print("Error: $error");
+    }).onError((e, _) {
+      print("Error: $e");
       credential.user?.delete();
     });
 

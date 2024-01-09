@@ -1,4 +1,4 @@
-import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'register_page_widget.dart' show RegisterPageWidget;
 import 'package:flutter/material.dart';
@@ -26,10 +26,8 @@ class RegisterPageModel extends FlutterFlowModel<RegisterPageWidget> {
   TextEditingController? passwordConfirmController;
   late bool passwordConfirmVisibility;
   String? Function(BuildContext, String?)? passwordConfirmControllerValidator;
-  // Stores action output result for [Custom Action - registerWithEmail] action in Button widget.
+  // Stores action output result for [Custom Action - registerWithEmail] action in ContinueBTN widget.
   AuthResponseStruct? resgiterResponse;
-  // Stores action output result for [Firestore Query - Query a collection] action in Button widget.
-  List<GrupoUsuarioRecord>? gruposSeguidos;
 
   /// Initialization and disposal methods.
 

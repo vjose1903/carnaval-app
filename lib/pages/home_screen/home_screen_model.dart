@@ -7,8 +7,10 @@ class HomeScreenModel extends FlutterFlowModel<HomeScreenWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
+  // Stores action output result for [Firestore Query - Query a collection] action in homeScreen widget.
+  List<GrupoUsuarioRecord>? finUserGruposSeguidos;
   // Stores action output result for [Backend Call - Read Document] action in homeScreen widget.
-  GrupoRecord? grupoSeleccinadoResult;
+  GrupoRecord? findGrupoSelectedResult;
 
   /// Initialization and disposal methods.
 

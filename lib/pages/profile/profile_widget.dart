@@ -1,9 +1,13 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/backend/firebase_storage/storage.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/upload_data.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -32,10 +36,17 @@ class _ProfileWidgetState extends State<ProfileWidget>
       effects: [
         MoveEffect(
           curve: Curves.easeInOut,
-          delay: 500.ms,
-          duration: 370.ms,
-          begin: const Offset(0.0, 100.0),
+          delay: 0.ms,
+          duration: 730.ms,
+          begin: const Offset(0.0, 50.0),
           end: const Offset(0.0, 0.0),
+        ),
+        FadeEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 730.ms,
+          begin: 0.0,
+          end: 1.0,
         ),
       ],
     ),
@@ -125,22 +136,115 @@ class _ProfileWidgetState extends State<ProfileWidget>
                       color: FlutterFlowTheme.of(context).secondaryBackground,
                       shape: BoxShape.circle,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: AuthUserStreamWidget(
-                        builder: (context) => ClipRRect(
-                          borderRadius: BorderRadius.circular(50.0),
-                          child: Image.network(
-                            valueOrDefault<String>(
-                              currentUserPhoto,
-                              'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fuser.png?alt=media&token=765cad05-627d-4fdd-8621-d333ecf3271a',
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: AuthUserStreamWidget(
+                            builder: (context) => Hero(
+                              tag: valueOrDefault<String>(
+                                currentUserPhoto,
+                                'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fuser.png?alt=media&token=765cad05-627d-4fdd-8621-d333ecf3271a',
+                              ),
+                              transitionOnUserGestures: true,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(50.0),
+                                child: Image.network(
+                                  valueOrDefault<String>(
+                                    currentUserPhoto,
+                                    'https://firebasestorage.googleapis.com/v0/b/carnaval-d2054.appspot.com/o/assets%2Fuser.png?alt=media&token=765cad05-627d-4fdd-8621-d333ecf3271a',
+                                  ),
+                                  width: 100.0,
+                                  height: 100.0,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                            width: 100.0,
-                            height: 100.0,
-                            fit: BoxFit.cover,
                           ),
                         ),
-                      ),
+                        if (_model.isEditing == true)
+                          InkWell(
+                            splashColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              final selectedMedia =
+                                  await selectMediaWithSourceBottomSheet(
+                                context: context,
+                                allowPhoto: true,
+                                pickerFontFamily: 'Open Sans',
+                              );
+                              if (selectedMedia != null &&
+                                  selectedMedia.every((m) => validateFileFormat(
+                                      m.storagePath, context))) {
+                                setState(() => _model.isDataUploading = true);
+                                var selectedUploadedFiles = <FFUploadedFile>[];
+
+                                var downloadUrls = <String>[];
+                                try {
+                                  showUploadMessage(
+                                    context,
+                                    'Uploading file...',
+                                    showLoading: true,
+                                  );
+                                  selectedUploadedFiles = selectedMedia
+                                      .map((m) => FFUploadedFile(
+                                            name: m.storagePath.split('/').last,
+                                            bytes: m.bytes,
+                                            height: m.dimensions?.height,
+                                            width: m.dimensions?.width,
+                                            blurHash: m.blurHash,
+                                          ))
+                                      .toList();
+
+                                  downloadUrls = (await Future.wait(
+                                    selectedMedia.map(
+                                      (m) async => await uploadData(
+                                          m.storagePath, m.bytes),
+                                    ),
+                                  ))
+                                      .where((u) => u != null)
+                                      .map((u) => u!)
+                                      .toList();
+                                } finally {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  _model.isDataUploading = false;
+                                }
+                                if (selectedUploadedFiles.length ==
+                                        selectedMedia.length &&
+                                    downloadUrls.length ==
+                                        selectedMedia.length) {
+                                  setState(() {
+                                    _model.uploadedLocalFile =
+                                        selectedUploadedFiles.first;
+                                    _model.uploadedFileUrl = downloadUrls.first;
+                                  });
+                                  showUploadMessage(context, 'Success!');
+                                } else {
+                                  setState(() {});
+                                  showUploadMessage(
+                                      context, 'Failed to upload data');
+                                  return;
+                                }
+                              }
+                            },
+                            child: Container(
+                              width: 100.0,
+                              height: 100.0,
+                              decoration: const BoxDecoration(
+                                color: Color(0x79797D8B),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.add_photo_alternate_outlined,
+                                color: Color(0xCFFFFFFF),
+                                size: 50.0,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
@@ -244,55 +348,46 @@ class _ProfileWidgetState extends State<ProfileWidget>
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 12.0),
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                // logout
-                                GoRouter.of(context).prepareAuthEvent();
-                                await authManager.signOut();
-                                GoRouter.of(context).clearRedirectLocation();
-
-                                // go to login
-
-                                context.goNamedAuth(
-                                  'loginPage',
-                                  context.mounted,
-                                  extra: <String, dynamic>{
-                                    kTransitionInfoKey: const TransitionInfo(
-                                      hasTransition: true,
-                                      transitionType: PageTransitionType.scale,
-                                      alignment: Alignment.bottomCenter,
-                                    ),
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: 44.0,
-                                height: 44.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  shape: BoxShape.circle,
-                                ),
-                                alignment: const AlignmentDirectional(0.0, 0.0),
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 7.0, 0.0),
-                                  child: Icon(
-                                    Icons.login_sharp,
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                    size: 24.0,
-                                  ),
-                                ),
-                              ),
+                          FlutterFlowIconButton(
+                            borderRadius: 20.0,
+                            borderWidth: 1.0,
+                            buttonSize: 40.0,
+                            fillColor: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                            disabledColor:
+                                FlutterFlowTheme.of(context).alternate,
+                            disabledIconColor:
+                                FlutterFlowTheme.of(context).secondaryText,
+                            icon: Icon(
+                              Icons.login_sharp,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              size: 24.0,
                             ),
+                            showLoadingIndicator: true,
+                            onPressed: (_model.isEditing == true)
+                                ? null
+                                : () async {
+                                    // logout
+                                    GoRouter.of(context).prepareAuthEvent();
+                                    await authManager.signOut();
+                                    GoRouter.of(context)
+                                        .clearRedirectLocation();
+
+                                    // go to login
+
+                                    context.goNamedAuth(
+                                      'loginPage',
+                                      context.mounted,
+                                      extra: <String, dynamic>{
+                                        kTransitionInfoKey: const TransitionInfo(
+                                          hasTransition: true,
+                                          transitionType:
+                                              PageTransitionType.rightToLeft,
+                                          duration: Duration(milliseconds: 500),
+                                        ),
+                                      },
+                                    );
+                                  },
                           ),
                           Text(
                             'Cerrar sesión',
@@ -606,72 +701,145 @@ class _ProfileWidgetState extends State<ProfileWidget>
                             ),
                           ),
                         ),
-                        if (_model.isEditing == true)
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FFButtonWidget(
-                                onPressed: () async {
-                                  // Hide btns
-                                  // Change is Editing
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            FFButtonWidget(
+                              onPressed: () async {
+                                if (_model.uploadedFileUrl != '') {
+                                  // Delete previous photo
+                                  await FirebaseStorage.instance
+                                      .refFromURL(_model.uploadedFileUrl)
+                                      .delete();
+                                  // Clear photo data
                                   setState(() {
-                                    _model.isEditing = false;
+                                    _model.isDataUploading = false;
+                                    _model.uploadedLocalFile = FFUploadedFile(
+                                        bytes: Uint8List.fromList([]));
+                                    _model.uploadedFileUrl = '';
                                   });
-                                },
-                                text: 'Cancelar',
-                                options: FFButtonOptions(
-                                  height: 40.0,
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      24.0, 0.0, 24.0, 0.0),
-                                  iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryImputBorder,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .override(
-                                        fontFamily: 'Inter',
-                                        color: Colors.white,
-                                      ),
-                                  elevation: 3.0,
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                }
+                                // Hide btns
+                                if (animationsMap[
+                                        'rowOnActionTriggerAnimation'] !=
+                                    null) {
+                                  animationsMap['rowOnActionTriggerAnimation']!
+                                      .controller
+                                      .reverse();
+                                }
+                                // Change is Editing
+                                setState(() {
+                                  _model.isEditing = false;
+                                });
+                              },
+                              text: 'Cancelar',
+                              options: FFButtonOptions(
+                                height: 40.0,
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    24.0, 0.0, 24.0, 0.0),
+                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 0.0, 0.0, 0.0),
+                                color: FlutterFlowTheme.of(context)
+                                    .primaryImputBorder,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: 'Inter',
+                                      color: Colors.white,
+                                    ),
+                                elevation: 3.0,
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 1.0,
                                 ),
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                              FFButtonWidget(
-                                onPressed: () {
-                                  print('SaveBtn pressed ...');
-                                },
-                                text: 'Guardar',
-                                options: FFButtonOptions(
-                                  height: 40.0,
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      24.0, 0.0, 24.0, 0.0),
-                                  iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  color: FlutterFlowTheme.of(context).primary,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .override(
-                                        fontFamily: 'Inter',
-                                        color: Colors.white,
+                            ),
+                            FFButtonWidget(
+                              onPressed: () async {
+                                // Editar perfil
+
+                                await currentUserReference!
+                                    .update(createUsuariosRecordData(
+                                  displayName: _model.textController1.text,
+                                  phoneNumber: _model.textController2.text,
+                                ));
+                                if (_model.uploadedFileUrl != '') {
+                                  if (currentUserPhoto != '') {
+                                    // Delete previous photo
+                                    await FirebaseStorage.instance
+                                        .refFromURL(currentUserPhoto)
+                                        .delete();
+                                  }
+                                  // update next photo
+
+                                  await currentUserReference!
+                                      .update(createUsuariosRecordData(
+                                    photoUrl: _model.uploadedFileUrl,
+                                  ));
+                                  // Clear photo data
+                                  setState(() {
+                                    _model.isDataUploading = false;
+                                    _model.uploadedLocalFile = FFUploadedFile(
+                                        bytes: Uint8List.fromList([]));
+                                    _model.uploadedFileUrl = '';
+                                  });
+                                }
+                                // Show success msg
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Perfil Actualizado correctamente.',
+                                      style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
                                       ),
-                                  elevation: 3.0,
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                    width: 1.0,
+                                    ),
+                                    duration: const Duration(milliseconds: 4000),
+                                    backgroundColor:
+                                        FlutterFlowTheme.of(context).success,
                                   ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                );
+                                // Hide btns
+                                if (animationsMap[
+                                        'rowOnActionTriggerAnimation'] !=
+                                    null) {
+                                  animationsMap['rowOnActionTriggerAnimation']!
+                                      .controller
+                                      .reverse();
+                                }
+                                // Change is Editing
+                                setState(() {
+                                  _model.isEditing = false;
+                                });
+                              },
+                              text: 'Guardar',
+                              options: FFButtonOptions(
+                                height: 40.0,
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    24.0, 0.0, 24.0, 0.0),
+                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 0.0, 0.0, 0.0),
+                                color: FlutterFlowTheme.of(context).primary,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: 'Inter',
+                                      color: Colors.white,
+                                    ),
+                                elevation: 3.0,
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 1.0,
                                 ),
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
-                            ],
-                          ).animateOnActionTrigger(
-                            animationsMap['rowOnActionTriggerAnimation']!,
-                          ),
+                            ),
+                          ],
+                        ).animateOnActionTrigger(
+                          animationsMap['rowOnActionTriggerAnimation']!,
+                        ),
                       ],
                     ),
                   ),
